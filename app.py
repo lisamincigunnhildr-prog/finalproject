@@ -1,5 +1,9 @@
+import pymysql
+pymysql.install_as_MySQLdb()
+
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 from flask_mysqldb import MySQL
+
 import MySQLdb.cursors
 from werkzeug.utils import secure_filename
 from werkzeug.security import generate_password_hash, check_password_hash   # <-- ADDED
