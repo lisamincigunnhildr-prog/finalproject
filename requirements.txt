@@ -2,3 +2,6 @@ Flask
 gunicorn
 PyMySQL
 cryptography
+flask-mysqldb
+flask-mail
+werkzeug
