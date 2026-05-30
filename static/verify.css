@@ -1,0 +1,123 @@
+
+
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+            font-family:Arial, Helvetica, sans-serif;
+        }
+
+        body{
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+            background:#111;
+            overflow:hidden;
+            padding:20px;
+        }
+
+        .verify-container{
+            width:100%;
+            max-width:500px;
+            padding:40px;
+            border-radius:25px;
+            background:rgba(255,255,255,0.08);
+            backdrop-filter:blur(12px);
+            box-shadow:0 0 30px rgba(0,0,0,0.3);
+            text-align:center;
+            color:white;
+        }
+
+        .verify-container i{
+            color:#ff4d6d;
+            margin-bottom:20px;
+        }
+
+        .verify-container h1{
+            font-weight:bold;
+            margin-bottom:10px;
+        }
+
+        .verify-container p{
+            color:#ccc;
+            margin-bottom:30px;
+        }
+
+ 
+        .otp-boxes{
+            display:flex;
+            justify-content:center;
+            gap:12px;
+            margin-bottom:30px;
+        }
+
+        .otp-input{
+            width:60px;
+            height:65px;
+            border:none;
+            outline:none;
+            border-radius:15px;
+            text-align:center;
+            font-size:24px;
+            font-weight:bold;
+            background:white;
+            transition:0.3s;
+        }
+
+        .otp-input:focus{
+            border:2px solid #ff4d6d;
+            box-shadow:0 0 12px #ff4d6d;
+            transform:scale(1.05);
+        }
+
+        .verify-btn{
+            width:100%;
+            border:none;
+            padding:14px;
+            border-radius:12px;
+            background:#ff4d6d;
+            color:white;
+            font-weight:bold;
+            transition:0.3s;
+        }
+
+        .verify-btn:hover{
+            transform:scale(1.02);
+        }
+
+        .timer{
+            margin-top:20px;
+            color:#ff9db0;
+            font-weight:bold;
+        }
+
+        .resend{
+            margin-top:15px;
+            color:#ccc;
+            cursor:pointer;
+            transition:0.3s;
+        }
+
+        .resend:hover{
+            color:white;
+        }
+
+        @media(max-width:576px){
+
+            .otp-boxes{
+                gap:7px;
+            }
+
+            .otp-input{
+                width:45px;
+                height:55px;
+                font-size:20px;
+            }
+
+            .verify-container{
+                padding:30px 20px;
+            }
+
+        }
+

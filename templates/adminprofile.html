@@ -1,0 +1,218 @@
+{% extends 'adminlayout.html' %}
+
+{% block content %}
+
+<style>
+.profile-card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    max-width:900px;
+    margin:auto;
+}
+
+.profile-card h2{
+    color:#dc3545;
+    margin-bottom:25px;
+    font-weight:600;
+}
+
+.form-control{
+    height:50px;
+}
+
+.button-group{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+</style>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+
+            <div class="toast align-items-center text-bg-{{ category }} border-0"
+                 role="alert"
+                 data-bs-autohide="true"
+                 data-bs-delay="3000">
+
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast">
+                    </button>
+                </div>
+
+            </div>
+
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<div class="container mt-4">
+
+<div class="profile-card">
+
+<h2>Admin Profile</h2>
+
+<form method="POST">
+
+<!-- NAME -->
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label>First Name</label>
+<input type="text"
+id="first_name"
+name="first_name"
+class="form-control profile-input"
+value="{{ admin.first_name }}"
+readonly>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Last Name</label>
+<input type="text"
+id="last_name"
+name="last_name"
+class="form-control profile-input"
+value="{{ admin.last_name }}"
+readonly>
+</div>
+
+</div>
+
+<!-- EMAIL -->
+<div class="mb-3">
+<label>Email</label>
+<input type="email"
+id="email"
+name="email"
+class="form-control profile-input"
+value="{{ admin.email }}"
+readonly>
+</div>
+
+<!-- CONTACT -->
+<div class="mb-3">
+<label>Contact Number</label>
+<input type="text"
+id="contact_number"
+name="contact_number"
+class="form-control profile-input"
+value="{{ admin.contact_number }}"
+readonly>
+</div>
+
+<!-- STREET -->
+<div class="mb-3">
+<label>Street</label>
+<input type="text"
+id="street"
+name="street"
+class="form-control profile-input"
+value="{{ admin.street }}"
+readonly>
+</div>
+
+<!-- REGION + PROVINCE -->
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label>Region</label>
+<select
+id="region"
+name="region"
+class="form-control profile-input"
+disabled>
+<option selected>{{ admin.region }}</option>
+</select>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Province</label>
+<select
+id="province"
+name="province"
+class="form-control profile-input"
+disabled>
+<option selected>{{ admin.province }}</option>
+</select>
+</div>
+
+</div>
+
+<!-- PASSWORD -->
+<div class="row">
+
+<div class="col-md-6 mb-3">
+<label>New Password</label>
+<input type="password"
+id="password"
+name="password"
+class="form-control profile-input"
+readonly>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Confirm Password</label>
+<input type="password"
+id="confirm_password"
+name="confirm_password"
+class="form-control profile-input"
+readonly>
+</div>
+
+</div>
+
+<!-- BUTTONS -->
+<div class="button-group mt-3">
+
+<button type="button" class="btn btn-danger" id="editBtn">
+Edit Profile
+</button>
+
+<button type="submit" class="btn btn-success d-none" id="saveBtn">
+Save Changes
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+
+<script>
+
+const editBtn = document.getElementById('editBtn');
+const saveBtn = document.getElementById('saveBtn');
+const inputs = document.querySelectorAll('.profile-input');
+
+editBtn.addEventListener('click', () => {
+
+inputs.forEach(input => {
+
+input.removeAttribute('readonly');
+
+if (input.tagName === "SELECT") {
+input.disabled = false;
+}
+
+});
+
+saveBtn.classList.remove('d-none');
+editBtn.classList.add('d-none');
+
+});
+
+</script>
+
+{% endblock %}

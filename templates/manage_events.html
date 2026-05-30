@@ -1,0 +1,178 @@
+{% extends 'adminlayout.html' %}
+
+{% block content %}
+
+<style>
+.container-box {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.table tbody tr {
+    cursor: pointer;
+}
+
+.badge-live {
+    background: #28a745;
+}
+
+.badge-draft {
+    background: #6c757d;
+}
+</style>
+
+<div class="container mt-4">
+
+<div class="container-box">
+
+<h2 class="mb-3">Manage Events</h2>
+
+<!-- FILTER -->
+<form method="GET" class="row mb-3">
+
+    <div class="col-md-3">
+        <select name="status" class="form-select">
+            <option value="">All Status</option>
+            <option value="live">Live</option>
+            <option value="draft">Draft</option>
+        </select>
+    </div>
+
+    <div class="col-md-3">
+        <input type="text" name="province" class="form-control" placeholder="Province">
+    </div>
+
+    <div class="col-md-3">
+        <input type="text" name="category" class="form-control" placeholder="Category">
+    </div>
+
+    <div class="col-md-3">
+        <button class="btn btn-primary w-100">Filter</button>
+    </div>
+
+</form>
+
+<!-- SEARCH -->
+<input type="text" id="searchInput" class="form-control mb-3" placeholder="Search events...">
+
+<!-- TABLE -->
+<div class="table-responsive">
+
+<table class="table table-hover" id="eventsTable">
+
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Type</th>
+            <th>Organizer</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Schedule</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+
+    <tbody>
+
+        {% for e in events %}
+        <tr onclick="window.location='/event/{{ e[0] }}'">
+
+            <td>{{ e[1] }}</td>
+            <td>{{ e[3] }}</td>
+            <td>{{ e[4] }}</td>
+
+            <!-- ORGANIZER -->
+            <td>{{ e[11] }} {{ e[12] }}</td>
+            <td>{{ e[13] }}</td>
+            <td>{{ e[14] }}</td>
+
+            <td>
+                {{ e[8] }} → {{ e[9] }}
+            </td>
+
+            <td>
+                {% if e[10] == 'live' %}
+                    <span class="badge badge-live">Live</span>
+                {% else %}
+                    <span class="badge badge-draft">Draft</span>
+                {% endif %}
+            </td>
+
+            <!-- ACTIONS -->
+            <td onclick="event.stopPropagation();">
+
+             <a href="/manage-events/{{ e[0] }}/edit" class="btn btn-warning btn-sm">
+    Edit
+</a>
+
+                <button class="btn btn-sm btn-danger"
+                        data-bs-toggle="modal"
+                        data-bs-target="#deleteModal{{ e[0] }}">
+                    Delete
+                </button>
+
+                <!-- DELETE MODAL -->
+                <div class="modal fade" id="deleteModal{{ e[0] }}">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <div class="modal-header">
+                                <h5>Confirm Delete</h5>
+                            </div>
+
+                            <div class="modal-body">
+                                Delete <b>{{ e[1] }}</b>?
+                            </div>
+
+                        <div class="modal-footer">
+    <a href="/manage-events/{{ e[0] }}/delete" class="btn btn-danger">
+        Yes Delete
+    </a>
+
+    <button type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal">
+        Cancel
+    </button>
+</div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+
+        </tr>
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+// SEARCH FILTER
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let value = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#eventsTable tbody tr");
+
+    rows.forEach(row => {
+        row.style.display = row.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+    });
+});
+
+</script>
+
+{% endblock %}

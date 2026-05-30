@@ -1,0 +1,444 @@
+{% extends 'adminlayout.html' %}
+
+{% block content %}
+
+<style>
+.profile-card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    margin-bottom:30px;
+}
+
+.profile-card h2{
+    color:#dc3545;
+    margin-bottom:25px;
+}
+
+.profile-card h6{
+    color:#212529;
+    font-weight:600;
+    margin-bottom:8px;
+}
+.form-control{
+    height:50px;
+}
+
+.button-group{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+}
+
+.table-container{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.password-wrapper{
+    position:relative;
+}
+
+.password-wrapper .form-control{
+    padding-right:45px;
+}
+
+.password-wrapper i{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#666;
+    z-index:10;
+}
+
+tr{
+    cursor:pointer;
+}
+</style>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+
+            <div class="toast align-items-center text-bg-{{ category }} border-0"
+                 role="alert"
+                 data-bs-autohide="true"
+                 data-bs-delay="3000">
+
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast">
+                    </button>
+                </div>
+
+            </div>
+
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<div class="container-fluid mt-4">
+
+    <div class="profile-card">
+
+        <h2>Manage Users</h2>
+
+        <div class="row mb-4">
+
+            <div class="col-md-4">
+
+                <h6 class="mb-2">Search User</h6>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    class="form-control"
+                    placeholder="Search by ID, name, email..."
+                    onkeyup="searchUsers()"
+                >
+
+            </div>
+
+        </div>
+
+        <form method="POST" id="userForm">
+
+            <input type="hidden" id="user_id" name="user_id">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">First Name</h6>
+
+                    <input
+                        type="text"
+                        id="first_name"
+                        name="first_name"
+                        class="form-control"
+                    >
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">Last Name</h6>
+
+                    <input
+                        type="text"
+                        id="last_name"
+                        name="last_name"
+                        class="form-control"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">Email</h6>
+
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        class="form-control"
+                    >
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">Contact Number</h6>
+
+                    <input
+                        type="text"
+                        id="contact_number"
+                        name="contact_number"
+                        class="form-control"
+                    >
+
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+
+                <h6 class="mb-2">Street</h6>
+
+                <input
+                    type="text"
+                    id="street"
+                    name="street"
+                    class="form-control"
+                >
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">Region</h6>
+
+                    <select
+                        id="region"
+                        name="region"
+                        class="form-control">
+                    </select>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">Province</h6>
+
+                    <select
+                        id="province"
+                        name="province"
+                        class="form-control">
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">Password</h6>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            class="form-control"
+                        >
+
+                        <i
+                            class="fa-solid fa-eye"
+                            onclick="togglePassword('password', this)">
+                        </i>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">Confirm Password</h6>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            id="confirmpass"
+                            name="confirm_password"
+                            class="form-control"
+                        >
+
+                        <i
+                            class="fa-solid fa-eye"
+                            onclick="togglePassword('confirmpass', this)">
+                        </i>
+
+                    </div>
+
+                    <div id="passwordMessage" class="mt-2"></div>
+
+                </div>
+
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <h6 class="mb-2">User Type</h6>
+
+                    <select
+                        id="usertype"
+                        name="usertype"
+                        class="form-control">
+
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+
+                    </select>
+
+                </div>
+
+            </div>
+
+            <div class="button-group">
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="add"
+                    class="btn btn-success">
+                    Add
+                </button>
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="edit"
+                    class="btn btn-primary">
+                    Edit
+                </button>
+
+                <button
+                    type="submit"
+                    name="action"
+                    value="delete"
+                    class="btn btn-danger"
+                    onclick="return confirm('Delete this user?')">
+                    Delete
+                </button>
+
+                <button
+                    type="button"
+                    class="btn btn-secondary"
+                    onclick="clearForm()">
+                    Clear
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+    <div class="table-container">
+
+        <table class="table table-hover table-bordered" id="usersTable">
+
+            <thead class="table-dark">
+
+                <tr>
+                    <th>User ID</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Email</th>
+                    <th>Password Hash</th>
+                    <th>Contact Number</th>
+                    <th>Street</th>
+                    <th>Province</th>
+                    <th>Region</th>
+                    <th>Created At</th>
+                    <th>User Type</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for user in users %}
+
+                <tr
+                    onclick="loadUser(this)"
+
+                    data-id="{{ user.user_id }}"
+                    data-first="{{ user.first_name }}"
+                    data-last="{{ user.last_name }}"
+                    data-email="{{ user.email }}"
+                    data-contact="{{ user.contact_number }}"
+                    data-street="{{ user.street }}"
+                    data-region="{{ user.region }}"
+                    data-province="{{ user.province }}"
+                    data-type="{{ user.usertype }}"
+                >
+
+                    <td>{{ user.user_id }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.password_hash }}</td>
+                    <td>{{ user.contact_number }}</td>
+                    <td>{{ user.street }}</td>
+                    <td>{{ user.province }}</td>
+                    <td>{{ user.region }}</td>
+                    <td>{{ user.created_at }}</td>
+                    <td>{{ user.usertype }}</td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<script>
+
+function loadUser(row){
+
+    document.getElementById('user_id').value = row.dataset.id;
+    document.getElementById('first_name').value = row.dataset.first;
+    document.getElementById('last_name').value = row.dataset.last;
+    document.getElementById('email').value = row.dataset.email;
+    document.getElementById('contact_number').value = row.dataset.contact;
+    document.getElementById('street').value = row.dataset.street;
+    document.getElementById('region').value = row.dataset.region;
+    document.getElementById('province').value = row.dataset.province;
+    document.getElementById('usertype').value = row.dataset.type;
+
+    document.getElementById('password').value = "";
+    document.getElementById('confirmpass').value = "";
+}
+
+function clearForm(){
+
+    document.getElementById('userForm').reset();
+    document.getElementById('user_id').value = "";
+
+    const msg = document.getElementById('passwordMessage');
+    if(msg){
+        msg.innerHTML = "";
+    }
+}
+
+function searchUsers(){
+
+    let input =
+        document.getElementById("searchInput")
+        .value
+        .toLowerCase();
+
+    let rows =
+        document.querySelectorAll("#usersTable tbody tr");
+
+    rows.forEach(row => {
+
+        let text = row.innerText.toLowerCase();
+
+        row.style.display =
+            text.includes(input) ? "" : "none";
+
+    });
+}
+
+</script>
+
+{% endblock %}

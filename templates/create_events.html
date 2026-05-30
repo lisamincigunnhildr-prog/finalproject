@@ -1,0 +1,260 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<style>
+.event-card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    max-width:900px;
+    margin:auto;
+}
+.event-card h2{
+    color:#dc3545;
+    margin-bottom:25px;
+}
+.form-control, .form-select{
+    border-radius:10px;
+}
+.preview-img{
+    width:100%;
+    max-height:220px;
+    object-fit:cover;
+    border-radius:12px;
+    margin-top:10px;
+    display:none;
+}
+.mb-3 h6{
+    color: red;
+}
+.error-msg {
+    color: #dc3545;
+    font-size: 0.9rem;
+    margin-top: 5px;
+}
+</style>
+
+<div class="container mt-4">
+    <div class="event-card">
+        <h2>Create Event</h2>
+
+        <!-- FLASH MESSAGE -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data" id="createEventForm">
+            <!-- TITLE -->
+            <div class="mb-3">
+                <h6>Event Title *</h6>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="mb-3">
+                <h6>Description *</h6>
+                <textarea name="description" class="form-control" rows="5" required></textarea>
+            </div>
+
+            <!-- CATEGORY + LOCATION -->
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6>Category *</h6>
+                    <select name="category" class="form-select" required>
+                        <option value="">-- Select Category --</option>
+                        <option>Seminar</option>
+                        <option>Workshop</option>
+                        <option>Sports</option>
+                        <option>Community Service</option>
+                        <option>Training</option>
+                        <option>Tech / IT</option>
+                        <option>Gardening & Agriculture</option>
+                        <option>Art & Design</option>
+                        <option>Business & Entrepreneurship</option>
+                        <option>Health & Wellness</option>
+                        <option>Music & Performance</option>
+                        <option>Education & Learning</option>
+                        <option>Food & Cooking</option>
+                        <option>Networking & Social</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <h6>Region</h6>
+                    <select name="region" id="region" class="form-select"></select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h6>Province</h6>
+                    <select name="province" id="province" class="form-select"></select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h6>Street</h6>
+                    <input type="text" name="street" class="form-control" placeholder="Street / Building / Landmark">
+                </div>
+            </div>
+
+            <!-- EVENT TYPE -->
+            <div class="mb-3">
+                <h6>Event Type *</h6>
+                <select name="event_type" class="form-select" required>
+                    <option value="">-- Select Type --</option>
+                    <option>Face-to-Face</option>
+                    <option>Online</option>
+                    <option>Hybrid</option>
+                </select>
+            </div>
+
+            <!-- DATE + PARTICIPANTS -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h6>Start Date & Time *</h6>
+                    <input type="text" id="start" name="event_start" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6>End Date & Time *</h6>
+                    <input type="text" id="end" name="event_end" class="form-control" required>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6>Max Participants *</h6>
+                    <input type="number" name="max_participants" class="form-control" min="1" required>
+                </div>
+            </div>
+
+            <!-- ORGANIZER INFO (readonly) -->
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <h6>Full Name</h6>
+                    <input type="text" class="form-control" value="{{ first_name }} {{ last_name }}" readonly>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6>Email</h6>
+                    <input type="text" class="form-control" value="{{ email }}" readonly>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <h6>Phone Number</h6>
+                    <input type="text" class="form-control" value="{{ phone }}" readonly>
+                </div>
+            </div>
+
+            <!-- IMAGE -->
+            <div class="mb-3">
+                <h6>Event Image</h6>
+                <input type="file" name="event_image" class="form-control" accept="image/*" onchange="previewImage(event)">
+                <img id="preview" class="preview-img">
+            </div>
+
+            <!-- ACTION BUTTONS -->
+            <div class="d-grid gap-2">
+                <button type="submit" name="status" value="draft" class="btn btn-outline-secondary">
+                    Save as Draft
+                </button>
+                <button type="submit" name="status" value="live" class="btn btn-danger">
+                    Publish Event
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Initialize flatpickr
+flatpickr("#start", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true,
+    onChange: function(selectedDates, dateStr, instance) {
+        // Optionally set min date for end picker
+        const endPicker = document.querySelector("#end")._flatpickr;
+        if (endPicker) {
+            endPicker.set("minDate", selectedDates[0]);
+        }
+    }
+});
+
+flatpickr("#end", {
+    enableTime: true,
+    dateFormat: "Y-m-d H:i",
+    time_24hr: true
+});
+
+// Image preview
+function previewImage(event) {
+    const reader = new FileReader();
+    reader.onload = function() {
+        const img = document.getElementById("preview");
+        img.src = reader.result;
+        img.style.display = "block";
+    };
+    if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+
+// ---------- FORM VALIDATION ----------
+document.getElementById("createEventForm").addEventListener("submit", function(e) {
+    // Get values
+    const title = document.querySelector("input[name='title']").value.trim();
+    const description = document.querySelector("textarea[name='description']").value.trim();
+    const category = document.querySelector("select[name='category']").value;
+    const eventType = document.querySelector("select[name='event_type']").value;
+    const startStr = document.querySelector("input[name='event_start']").value;
+    const endStr = document.querySelector("input[name='event_end']").value;
+    const maxPart = document.querySelector("input[name='max_participants']").value;
+
+    // 1. Check required fields
+    if (!title || !description || !category || !eventType || !startStr || !endStr || !maxPart) {
+        alert("Please fill in all required fields (marked with *).");
+        e.preventDefault();
+        return false;
+    }
+
+    // 2. Validate max_participants (positive integer)
+    const maxPartNum = parseInt(maxPart, 10);
+    if (isNaN(maxPartNum) || maxPartNum < 1) {
+        alert("Max Participants must be a positive number (at least 1).");
+        e.preventDefault();
+        return false;
+    }
+
+    // 3. Validate date/time: end >= start
+    const startDate = new Date(startStr);
+    const endDate = new Date(endStr);
+    if (isNaN(startDate.getTime()) || isNaN(endDate.getTime())) {
+        alert("Invalid date/time format. Please use the calendar picker.");
+        e.preventDefault();
+        return false;
+    }
+    if (endDate <= startDate) {
+        alert("Event End date/time must be later than Event Start date/time.");
+        e.preventDefault();
+        return false;
+    }
+
+    // Optional: check that start is not in the past? (can add if needed)
+    // const now = new Date();
+    // if (startDate < now) {
+    //     alert("Start date/time cannot be in the past.");
+    //     e.preventDefault();
+    //     return false;
+    // }
+
+    return true; // allow submission
+});
+</script>
+
+{% endblock %}

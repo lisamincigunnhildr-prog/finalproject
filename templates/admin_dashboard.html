@@ -1,0 +1,177 @@
+{% extends 'adminlayout.html' %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+.dashboard-card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.dashboard-title {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.dashboard-value {
+    font-size: 28px;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+.section-title {
+    margin: 25px 0 10px;
+    font-weight: 600;
+}
+
+</style>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+
+            <div class="toast align-items-center text-bg-{{ category }} border-0"
+                 role="alert"
+                 data-bs-autohide="true"
+                 data-bs-delay="3000">
+
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast">
+                    </button>
+                </div>
+
+            </div>
+
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<div class="container mt-4">
+
+    <!-- ================= KPI CARDS ================= -->
+    <div class="row g-3">
+
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-title">Users</div>
+                <div class="dashboard-value">{{ total_users }}</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-title">Events</div>
+                <div class="dashboard-value">{{ total_events }}</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-title">Live</div>
+                <div class="dashboard-value">{{ live }}</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="dashboard-card text-center">
+                <div class="dashboard-title">Draft</div>
+                <div class="dashboard-value">{{ draft }}</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= CHART ================= -->
+    <div class="row mt-4 g-3">
+
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <div class="dashboard-title">Event Status</div>
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="dashboard-card">
+                <div class="dashboard-title">System Overview</div>
+                <canvas id="systemChart"></canvas>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= RECENT EVENTS ================= -->
+    <div class="section-title">Recent Events</div>
+
+    <div class="dashboard-card">
+
+        <table class="table table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    <th>Creator</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for e in recent_events %}
+                <tr>
+                    <td>{{ e.event_title }}</td>
+                    <td>{{ e.first_name }} {{ e.last_name }}</td>
+                    <td>
+                        {% if e.event_status == 'live' %}
+                            <span class="badge bg-success">Live</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Draft</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<!-- ================= CHART JS ================= -->
+<script>
+new Chart(document.getElementById("statusChart"), {
+    type: "doughnut",
+    data: {
+        labels: ["Live", "Draft"],
+        datasets: [{
+            data: [{{ live }}, {{ draft }}]
+        }]
+    }
+});
+
+new Chart(document.getElementById("systemChart"), {
+    type: "bar",
+    data: {
+        labels: ["Users", "Events"],
+        datasets: [{
+            label: "System Overview",
+            data: [{{ total_users }}, {{ total_events }}]
+        }]
+    }
+});
+</script>
+
+{% endblock %}

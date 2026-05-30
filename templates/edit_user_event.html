@@ -1,0 +1,190 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<style>
+.event-card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    max-width:900px;
+    margin:auto;
+}
+
+.event-card h2{
+    color:#dc3545;
+    margin-bottom:25px;
+}
+
+.form-control,
+.form-select{
+    border-radius:10px;
+}
+</style>
+
+<div class="container mt-4">
+
+<div class="event-card">
+
+<h2>Edit Event</h2>
+
+<form method="POST"
+      enctype="multipart/form-data"
+      action="{{ url_for('update_user_event', event_id=event.event_id) }}">
+
+    <!-- TITLE -->
+    <div class="mb-3">
+        <h6>Event Title</h6>
+        <input type="text"
+               name="title"
+               class="form-control"
+               value="{{ event.event_title }}"
+               required>
+    </div>
+
+    <!-- DESCRIPTION -->
+    <div class="mb-3">
+        <h6>Description</h6>
+        <textarea name="description"
+                  class="form-control"
+                  rows="5"
+                  required>{{ event.event_description }}</textarea>
+    </div>
+
+    <!-- CATEGORY -->
+    <div class="mb-3">
+        <h6>Category</h6>
+
+        <select name="category" class="form-select">
+            <option {% if event.event_category == 'Seminar' %}selected{% endif %}>Seminar</option>
+            <option {% if event.event_category == 'Workshop' %}selected{% endif %}>Workshop</option>
+            <option {% if event.event_category == 'Sports' %}selected{% endif %}>Sports</option>
+            <option {% if event.event_category == 'Community Service' %}selected{% endif %}>Community Service</option>
+            <option {% if event.event_category == 'Training' %}selected{% endif %}>Training</option>
+        </select>
+    </div>
+
+    <!-- EVENT TYPE -->
+    <div class="mb-3">
+        <h6>Event Type</h6>
+
+        <select name="event_type" class="form-select">
+            <option {% if event.event_type == 'Face-to-Face' %}selected{% endif %}>Face-to-Face</option>
+            <option {% if event.event_type == 'Online' %}selected{% endif %}>Online</option>
+            <option {% if event.event_type == 'Hybrid' %}selected{% endif %}>Hybrid</option>
+        </select>
+    </div>
+
+    <!-- LOCATION -->
+    <div class="row">
+
+        <div class="col-md-4 mb-3">
+            <h6>Region</h6>
+            <input type="text"
+                   name="region"
+                   class="form-control"
+                   value="{{ event.region }}">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <h6>Province</h6>
+            <input type="text"
+                   name="province"
+                   class="form-control"
+                   value="{{ event.province }}">
+        </div>
+
+        <div class="col-md-4 mb-3">
+            <h6>Street</h6>
+            <input type="text"
+                   name="street"
+                   class="form-control"
+                   value="{{ event.street }}">
+        </div>
+
+    </div>
+
+    <!-- DATE -->
+    <div class="row">
+
+        <div class="col-md-6 mb-3">
+            <h6>Start</h6>
+            <input type="datetime-local"
+                   name="event_start"
+                   class="form-control"
+                   value="{{ event.event_start|string|replace(' ', 'T') }}">
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <h6>End</h6>
+            <input type="datetime-local"
+                   name="event_end"
+                   class="form-control"
+                   value="{{ event.event_end|string|replace(' ', 'T') }}">
+        </div>
+
+    </div>
+
+    <!-- MAX PARTICIPANTS -->
+    <div class="mb-3">
+        <h6>Max Participants</h6>
+        <input type="number"
+               name="max_participants"
+               class="form-control"
+               value="{{ event.max_participants }}">
+    </div>
+
+    <!-- EVENT IMAGE -->
+    <div class="mb-3">
+        <h6>Event Image</h6>
+
+        {% if event.event_image %}
+        <div class="mb-2">
+            <img src="{{ url_for('static', filename='uploads/' + event.event_image) }}"
+                 style="width:100%; max-height:250px; object-fit:cover; border-radius:10px;">
+        </div>
+        {% endif %}
+
+        <input type="file"
+               name="event_image"
+               class="form-control"
+               accept="image/*">
+    </div>
+
+    <!-- STATUS -->
+    <div class="mb-3">
+        <h6>Status</h6>
+
+        <select name="status" class="form-select">
+            <option value="live" {% if event.event_status == 'live' %}selected{% endif %}>
+                Live
+            </option>
+
+            <option value="draft" {% if event.event_status == 'draft' %}selected{% endif %}>
+                Draft
+            </option>
+        </select>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="d-grid gap-2">
+
+        <button type="submit" class="btn btn-danger">
+            Update Event
+        </button>
+
+        <a href="{{ url_for('joined_events') }}"
+           class="btn btn-secondary">
+            Cancel
+        </a>
+
+    </div>
+
+</form>
+
+</div>
+
+</div>
+
+{% endblock %}

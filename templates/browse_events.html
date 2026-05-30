@@ -1,0 +1,150 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<style>
+
+.event-card{
+    border:none;
+    border-radius:15px;
+    overflow:hidden;
+    box-shadow:0 5px 15px rgba(0,0,0,.1);
+    transition:.3s;
+}
+
+.event-card:hover{
+    transform:translateY(-5px);
+}
+
+.event-image{
+    height:220px;
+    object-fit:cover;
+    width:100%;
+}
+
+.badge-category{
+    background:#dc3545;
+}
+
+</style>
+
+<div class="container mt-4">
+
+    <h2 class="text-danger mb-4">
+        Browse Events
+    </h2>
+
+    <!-- FILTERS -->
+
+    <form method="GET" class="row mb-3">
+
+        <div class="col-md-3">
+            <input type="text"
+                   name="province"
+                   class="form-control"
+                   placeholder="Province">
+        </div>
+
+        <div class="col-md-3">
+            <input type="text"
+                   name="category"
+                   class="form-control"
+                   placeholder="Category">
+        </div>
+
+        <div class="col-md-3">
+            <button class="btn btn-danger w-100">
+                Filter
+            </button>
+        </div>
+
+        <div class="col-md-3">
+            <a href="/browse-events"
+               class="btn btn-secondary w-100">
+                Clear
+            </a>
+        </div>
+
+    </form>
+
+    <!-- SEARCH -->
+
+    <input type="text"
+           id="searchInput"
+           class="form-control mb-4"
+           placeholder="Search events...">
+
+    <div class="row">
+
+        {% for e in events %}
+
+        <div class="col-md-4 mb-4 event-search">
+
+            <div class="card event-card h-100">
+
+                {% if e.event_image %}
+                <img src="{{ url_for('static', filename='uploads/' ~ e.event_image) }}"
+                     class="event-image">
+                {% endif %}
+
+                <div class="card-body">
+
+                    <span class="badge badge-category">
+                        {{ e.event_category }}
+                    </span>
+
+                    <h5 class="mt-2">
+                        {{ e.event_title }}
+                    </h5>
+
+                    <p class="text-muted">
+                        {{ e.event_description[:120] }}...
+                    </p>
+
+                    <p>
+                        📍 {{ e.province }}
+                    </p>
+
+                    <p>
+                        📅 {{ e.event_start }}
+                    </p>
+
+                    <a href="{{ url_for('event_details', event_id=e.event_id) }}"
+                       class="btn btn-outline-danger w-100">
+                        See More
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+<script>
+
+document.getElementById("searchInput")
+.addEventListener("keyup", function(){
+
+    let value = this.value.toLowerCase();
+
+    document.querySelectorAll(".event-search")
+    .forEach(card => {
+
+        card.style.display =
+            card.innerText.toLowerCase().includes(value)
+            ? ""
+            : "none";
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

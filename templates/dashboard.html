@@ -1,0 +1,124 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="toast align-items-center text-bg-{{ category }} border-0"
+                 role="alert"
+                 data-bs-autohide="true"
+                 data-bs-delay="3000">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+                    <button type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast">
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+
+<div class="container mt-4">
+
+    <!-- KPI CARDS -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Created Events</h5>
+                <h2>{{ created }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Joined Events</h5>
+                <h2>{{ joined }}</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3">
+                <h5>Total Participants (Your Events)</h5>
+                <h2>{{ total_participants }}</h2>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHARTS -->
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card p-3">
+                <canvas id="activityChart"></canvas>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3">
+                <canvas id="ratioChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- MY EVENTS -->
+    <h4 class="mt-4">My Created Events</h4>
+    <table class="table table-bordered">
+        <tr>
+            <th>Event</th>
+            <th>Status</th>
+            <th>Participants</th>
+        </tr>
+        {% for e in my_events %}
+        <tr>
+            <td>{{ e.event_title }}</td>
+            <td>{{ e.event_status }}</td>
+            <td>{{ e.participants }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+
+    <!-- JOINED EVENTS -->
+    <h4 class="mt-4">Joined Events</h4>
+    <div class="row">
+        {% for e in joined_events %}
+        <div class="col-md-4 mb-3">
+            <div class="card p-3">
+                <h5>{{ e.event_title }}</h5>
+                <p>{{ e.event_category }}</p>
+                <p><b>{{ e.region }} - {{ e.province }}</b></p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<script>
+new Chart(document.getElementById("activityChart"), {
+    type: "bar",
+    data: {
+        labels: ["Created", "Joined"],
+        datasets: [{
+            label: "Events",
+            data: [{{ created }}, {{ joined }}]
+        }]
+    }
+});
+
+new Chart(document.getElementById("ratioChart"), {
+    type: "pie",
+    data: {
+        labels: ["Created", "Joined"],
+        datasets: [{
+            data: [{{ created }}, {{ joined }}]
+        }]
+    }
+});
+</script>
+
+{% endblock %}

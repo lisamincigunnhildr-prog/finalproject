@@ -1,0 +1,283 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+
+<style>
+.profile-card{
+    background:white;
+    padding:30px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+    max-width:900px;
+    margin:auto;
+}
+
+.profile-card h2{
+    color:#dc3545;
+    margin-bottom:25px;
+    font-weight:600;
+}
+
+.form-control{
+    height:50px;
+}
+
+.password-wrapper{
+    position:relative;
+}
+
+.password-wrapper i{
+    position:absolute;
+    right:15px;
+    top:50%;
+    transform:translateY(-50%);
+    cursor:pointer;
+    color:#666;
+}
+
+.button-group{
+    display:flex;
+    gap:10px;
+    margin-top:20px;
+}
+
+
+
+
+</style>
+<div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 9999;">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+
+            <div class="toast align-items-center text-bg-{{ category }} border-0"
+                 role="alert"
+                 data-bs-autohide="true"
+                 data-bs-delay="3000">
+
+                <div class="d-flex">
+                    <div class="toast-body">
+                        {{ message }}
+                    </div>
+
+                    <button type="button"
+                            class="btn-close btn-close-white me-2 m-auto"
+                            data-bs-dismiss="toast">
+                    </button>
+                </div>
+
+            </div>
+
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+</div>
+<div class="container mt-4">
+
+    <div class="profile-card">
+
+        <h2>My Profile</h2>
+
+        <form method="POST" id="profileForm">
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label>First Name</label>
+                    <input
+                        type="text"
+                        class="form-control profile-input"
+                        name="first_name"
+                        value="{{ user.first_name }}"
+                        readonly
+                    >
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label>Last Name</label>
+                    <input
+                        type="text"
+                        class="form-control profile-input"
+                        name="last_name"
+                        value="{{ user.last_name }}"
+                        readonly
+                    >
+                </div>
+
+            </div>
+
+            <div class="mb-3">
+                <label>Email</label>
+                <input
+                    type="email"
+                    class="form-control profile-input"
+                    name="email"
+                    value="{{ user.email }}"
+                    readonly
+                >
+            </div>
+
+           <div class="mb-3">
+    <label>Contact Number</label>
+    <input
+        type="text"
+        class="form-control profile-input number-input"
+        name="contact_number"
+        value="{{ user.contact_number }}"
+        readonly
+    >
+</div>
+
+          <div class="mb-3">
+    <label>Street</label>
+    <input
+        type="text"
+        class="form-control profile-input"
+        name="street"
+        value="{{ user.street }}"
+        readonly
+    >
+</div>
+
+  <div class="row">
+
+    <div class="col-md-6 mb-3">
+        <label>Region</label>
+
+        <select
+            id="region"
+            name="region"
+            class="form-control profile-input"
+            data-selected="{{ user.region }}"
+            disabled
+        >
+        </select>
+    </div>
+
+    <div class="col-md-6 mb-3">
+        <label>Province</label>
+
+        <select
+            id="province"
+            name="province"
+            class="form-control profile-input"
+            data-selected="{{ user.province }}"
+            disabled
+        >
+        </select>
+    </div>
+
+
+
+
+</div>
+
+            <!-- PASSWORD -->
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+
+                    <label>New Password</label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            class="form-control profile-input"
+                            id="password"
+                            name="password"
+                            readonly
+                        >
+
+                        <i
+                            class="fa-solid fa-eye"
+                            onclick="togglePassword('password', this)"
+                        ></i>
+
+                    </div>
+
+                </div>
+
+                <div class="col-md-6 mb-3">
+
+                    <label>Confirm Password</label>
+
+                    <div class="password-wrapper">
+
+                        <input
+                            type="password"
+                            class="form-control profile-input"
+                            id="confirmpass"
+                            name="confirm_password"
+                            readonly
+                        >
+
+                        <i
+                            class="fa-solid fa-eye"
+                            onclick="togglePassword('confirm_password', this)"
+                        ></i>
+
+                    </div>
+<div id="passwordMessage" class="mt-2"></div>
+                </div>
+
+            </div>
+
+            <div class="button-group">
+
+                <button
+                    type="button"
+                    class="btn btn-danger"
+                    id="editBtn"
+                >
+                    Edit Profile
+                </button>
+
+                <button
+                    type="submit"
+                    class="btn btn-success d-none"
+                    id="saveBtn"
+                >
+                    Save Changes
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+<script>
+
+const editBtn = document.getElementById('editBtn');
+const saveBtn = document.getElementById('saveBtn');
+const inputs = document.querySelectorAll('.profile-input');
+
+
+
+// EDIT BUTTON
+
+editBtn.addEventListener('click', () => {
+
+    inputs.forEach(input => {
+
+        input.removeAttribute('readonly');
+
+        if(input.tagName === "SELECT"){
+            input.disabled = false;
+        }
+
+    });
+
+    saveBtn.classList.remove('d-none');
+    editBtn.classList.add('d-none');
+
+});
+
+
+
+</script>
+  
+{% endblock %}
