@@ -1,5 +1,4 @@
-import pymysql
-pymysql.install_as_MySQLdb()
+
 
 from flask import Flask, render_template, request, redirect, session, flash, url_for
 from flask_mysqldb import MySQL
@@ -22,10 +21,10 @@ app.config['MAIL_USERNAME'] = 'lisamincigunnhildr@gmail.com'
 app.config['MAIL_PASSWORD'] = "huaw qfnj inzi lvsj"
 mail = Mail(app)
 
-app.config['MYSQL_HOST'] = 'localhost'
-app.config['MYSQL_USER'] = 'root'
-app.config['MYSQL_PASSWORD'] = ''
-app.config['MYSQL_DB'] = 'eventnova'
+app.config['MYSQL_HOST'] = 'sql12.freesqldatabase.com'
+app.config['MYSQL_USER'] = 'sql12828810'
+app.config['MYSQL_PASSWORD'] = 'wZ5veTce9E'
+app.config['MYSQL_DB'] = 'sql12828810'
 mysql = MySQL(app)
 
 UPLOAD_FOLDER = 'static/uploads'
